@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 
-	"git.tangthinker.com/tangthinker/secret-chat-server/core"
-	"git.tangthinker.com/tangthinker/secret-chat-server/internal/router"
 	"github.com/gofiber/fiber/v2"
+	"github.com/tangthinker/secret-chat-server/core"
+	"github.com/tangthinker/secret-chat-server/internal/router"
 	userPkg "github.com/tangthinker/user-center/pkg"
 )
 

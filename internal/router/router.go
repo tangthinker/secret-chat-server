@@ -1,8 +1,8 @@
 package router
 
 import (
-	"git.tangthinker.com/tangthinker/secret-chat-server/internal/middleware"
 	"github.com/gofiber/fiber/v2"
+	"github.com/tangthinker/secret-chat-server/internal/middleware"
 )
 
 func RegisterRouters(router fiber.Router) {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"git.tangthinker.com/tangthinker/secret-chat-server/internal/middleware"
 	"github.com/gofiber/fiber/v2"
+	"github.com/tangthinker/secret-chat-server/internal/middleware"
 )
 
 type globalHelper struct {
