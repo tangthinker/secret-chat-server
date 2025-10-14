@@ -6,7 +6,7 @@ import (
 )
 
 func RegisterRouters(router fiber.Router) {
-	rootGroup := router.Group("/api/v1/server", middleware.TokenValid, middleware.UserHook)
+	rootGroup := router.Group("/api/v1/", middleware.TokenValid, middleware.UserHook)
 
 	rootGroup.Get("/health", func(ctx *fiber.Ctx) error {
 		return ctx.SendString("Hello, World!")

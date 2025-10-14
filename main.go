@@ -20,8 +20,7 @@ func main() {
 
 	router.RegisterRouters(app)
 
-	authGroup := app.Group("/api/v1/")
-	userPkg.RegisterUserCenter(authGroup, core.GetDBPath())
+	userPkg.RegisterUserCenter(app, core.GetDBPath())
 
 	core.StartServer(app)
 }
