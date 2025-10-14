@@ -1,5 +1,6 @@
 [server]
-port = 8080
+port = 9999
+log-file-path = "./request.log"
 
 [database]
 path = "/Users/tangthinker/code/mine/secret-chat-server/data"

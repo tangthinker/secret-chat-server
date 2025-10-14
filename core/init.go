@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"git.tangthinker.com/tangthinker/secret-chat-server/internal/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -26,6 +27,10 @@ func Init(configPath string) {
 }
 
 func StartServer(app *fiber.App) {
+
+	logFilePath := GlobalHelper.Config.GetString("server.log-file-path")
+	app.Use(middleware.LoggerInFile(logFilePath))
+
 	serverPort := GlobalHelper.Config.GetString("server.port")
 	log.Fatal(app.Listen(":" + serverPort))
 }
