@@ -24,7 +24,7 @@ func (ctrl *Ctrl) HandleConn(conn *websocket.Conn) {
 			ctrl.connService.RemoveConnection(uid)
 			break
 		}
-		err = ctrl.connService.HandleMessage(nil, uid, connections.SourceMessage{
+		err = ctrl.connService.HandleSource(uid, connections.SourceMessage{
 			Type:    connections.SourceType(messageType),
 			Content: message,
 		})
