@@ -23,16 +23,16 @@ func NewMessagesModel() *MessagesModel {
 
 func (m *MessagesModel) GetListByUid(ctx context.Context, uid string) ([]*schema.Messages, error) {
 	var result []*schema.Messages
-	if err := m.db.Where("uid = ?", uid).Find(&result).Error; err != nil {
+	if err := m.db.WithContext(ctx).Where("uid = ?", uid).Find(&result).Error; err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
 func (m *MessagesModel) Delete(ctx context.Context, msgIds []uint) error {
-	return m.db.Delete(&schema.Messages{}, "id in (?)", msgIds).Error
+	return m.db.WithContext(ctx).Delete(&schema.Messages{}, "id in (?)", msgIds).Error
 }
 
 func (m *MessagesModel) Create(ctx context.Context, req *schema.Messages) error {
-	return m.db.Create(req).Error
+	return m.db.WithContext(ctx).Create(req).Error
 }
