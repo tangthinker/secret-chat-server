@@ -22,10 +22,10 @@ const (
 )
 
 type Message struct {
-	MessageType MessageType
-	From        string
-	Destination string
-	Content     string
+	MessageType MessageType `json:"message_type"`
+	From        string      `json:"from"`
+	Destination string      `json:"destination"`
+	Content     string      `json:"content"`
 }
 
 func (m *Message) String() string {
