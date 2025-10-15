@@ -16,7 +16,7 @@ type UserInfoModel struct {
 
 func NewUserInfoModel() *UserInfoModel {
 	d := core.GlobalHelper.DB.GetDB()
-	if err := d.AutoMigrate(&schema.UserInfo{}).Error; err != nil {
+	if err := d.AutoMigrate(&schema.UserInfo{}); err != nil {
 		panic(fmt.Sprintf("auto migrate error, %s", err))
 	}
 	return &UserInfoModel{

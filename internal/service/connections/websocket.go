@@ -87,7 +87,7 @@ func (ws *WebSocketConnections) HandleSource(uid string, message SourceMessage) 
 
 func (ws *WebSocketConnections) HandleMessage(message Message) error {
 	if message.MessageType == MessageTypeSingle {
-		err := ws.SendSource(message.From, SourceMessage{
+		err := ws.SendSource(message.Destination, SourceMessage{
 			Type:    SourceTypeString,
 			Content: []byte(message.String()),
 		})

@@ -30,7 +30,7 @@ func (m *MessagesModel) GetListByUid(ctx context.Context, uid string) ([]*schema
 }
 
 func (m *MessagesModel) Delete(ctx context.Context, msgIds []uint) error {
-	return m.db.Delete(&schema.Messages{}, "msg_id in (?)", msgIds).Error
+	return m.db.Delete(&schema.Messages{}, "id in (?)", msgIds).Error
 }
 
 func (m *MessagesModel) Create(ctx context.Context, req *schema.Messages) error {
