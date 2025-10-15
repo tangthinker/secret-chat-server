@@ -2,9 +2,6 @@ package core
 
 import (
 	"fmt"
-	"log"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 type globalHelper struct {
@@ -23,11 +20,6 @@ func Init(configPath string) {
 	}
 
 	fmt.Println("------init cnf success------")
-}
-
-func StartServer(app *fiber.App) {
-	serverPort := GlobalHelper.Config.GetString("server.port")
-	log.Fatal(app.Listen(":" + serverPort))
 }
 
 func GetDBPath() string {

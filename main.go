@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/tangthinker/secret-chat-server/core"
+	"github.com/tangthinker/secret-chat-server/core/server"
 	"github.com/tangthinker/secret-chat-server/internal/router"
 	userPkg "github.com/tangthinker/user-center/pkg"
 )
@@ -22,5 +23,5 @@ func main() {
 
 	userPkg.RegisterUserCenter(app, core.GetDBPath())
 
-	core.StartServer(app)
+	server.StartServer(app)
 }
