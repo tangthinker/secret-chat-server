@@ -1,6 +1,9 @@
 package connections
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"time"
+)
 
 type Connections interface {
 	// SendSource 发送消息
@@ -26,6 +29,7 @@ type Message struct {
 	From        string      `json:"from"`
 	Destination string      `json:"destination"`
 	Content     string      `json:"content"`
+	Timestamp   time.Time   `json:"timestamp"`
 }
 
 func (m *Message) String() string {

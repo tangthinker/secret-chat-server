@@ -80,6 +80,7 @@ func (ws *WebSocketConnections) HandleSource(uid string, message SourceMessage) 
 			return fmt.Errorf("unmarshal msg err:%w", err)
 		}
 		msg.From = uid
+		msg.Timestamp = time.Now()
 		return ws.HandleMessage(msg)
 	}
 	return nil
