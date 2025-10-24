@@ -3,6 +3,15 @@ module github.com/tangthinker/secret-chat-server
 go 1.25.1
 
 require (
+	github.com/gofiber/contrib/websocket v1.3.4
+	github.com/gofiber/fiber/v2 v2.52.9
+	github.com/spf13/viper v1.21.0
+	github.com/tangthinker/user-center v1.2.6
+	gorm.io/driver/sqlite v1.6.0
+	gorm.io/gorm v1.31.0
+)
+
+require (
 	github.com/DataDog/zstd v1.4.5 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -17,8 +26,6 @@ require (
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/getsentry/sentry-go v0.27.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
-	github.com/gofiber/contrib/websocket v1.3.4 // indirect
-	github.com/gofiber/fiber/v2 v2.52.9 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
@@ -48,10 +55,8 @@ require (
 	github.com/spf13/afero v1.15.0 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
-	github.com/spf13/viper v1.21.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tangthinker/jwt-model v1.0.0 // indirect
-	github.com/tangthinker/user-center v1.2.6 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.55.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
@@ -61,6 +66,4 @@ require (
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
-	gorm.io/driver/sqlite v1.6.0 // indirect
-	gorm.io/gorm v1.31.0 // indirect
 )
