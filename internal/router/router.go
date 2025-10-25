@@ -16,8 +16,9 @@ func RegisterRouters(router fiber.Router) {
 	})
 
 	userInfoCtrl := user_info.New()
-	rootGroup.Get("/user/info/get", userInfoCtrl.GetUserInfo)
+	rootGroup.Post("/user/info/get", userInfoCtrl.GetUserInfo)
 	rootGroup.Post("/user/info/update", userInfoCtrl.UpdateUserInfo)
+	rootGroup.Post("/user/info/exists", userInfoCtrl.Exists)
 
 	websocketCtrl := ws.New()
 	rootGroup.Get("/websocket/conn", websocket.New(websocketCtrl.HandleConn))

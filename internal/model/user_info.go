@@ -32,6 +32,14 @@ func (ui *UserInfoModel) GetByUid(ctx context.Context, uid string) (*schema.User
 	return &user, nil
 }
 
+func (ui *UserInfoModel) Exists(ctx context.Context, uid string) (bool, error) {
+	var count int64
+	if err := ui.db.WithContext(ctx).Model(&schema.UserInfo{}).Where("uid = ?", uid).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
 func (ui *UserInfoModel) Save(ctx context.Context, req *schema.UserInfo) error {
 	tbName := req.TableName()
 
