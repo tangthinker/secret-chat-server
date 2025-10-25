@@ -1,0 +1,6 @@
+[server]
+port = 9999
+log-file-path = "./request.log"
+
+[database]
+path = "/Users/shanliao/code/GoProject/secret-chat-server/data"
