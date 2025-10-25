@@ -33,6 +33,10 @@ func NewWebSocketConnections() *WebSocketConnections {
 func (ws *WebSocketConnections) AddConnection(uid string, conn *websocket.Conn) {
 	ws.mutex.Lock()
 	defer ws.mutex.Unlock()
+	if _, ok := ws.connections[uid]; ok {
+		ws.connections[uid].Close()
+		delete(ws.connections, uid)
+	}
 	ws.connections[uid] = conn
 
 	ctx, cal := context.WithTimeout(context.Background(), 3*time.Second)
