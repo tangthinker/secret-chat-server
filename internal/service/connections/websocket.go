@@ -94,6 +94,9 @@ func (ws *WebSocketConnections) SendSource(uid string, message SourceMessage) er
 }
 
 func (ws *WebSocketConnections) HandleSource(uid string, message SourceMessage) error {
+	if message.Type == SourceTypeString && string(message.Content) == "PING" {
+		return ws.sendPONG(uid)
+	}
 	// 客户端发送的是加密后的二进制数据，需要先解密
 	decryptedContent, err := ws.decryptBinaryContent(message.Content)
 	if err != nil {
@@ -164,4 +167,14 @@ func (ws *WebSocketConnections) decryptBinaryContent(encryptedData []byte) ([]by
 	}
 
 	return decryptedData, nil
+}
+
+func (ws *WebSocketConnections) sendPONG(uid string) error {
+	ws.mutex.RLock()
+	defer ws.mutex.RUnlock()
+	conn, ok := ws.connections[uid]
+	if !ok {
+		return errors.New("connection not found")
+	}
+	return conn.WriteMessage(websocket.PongMessage, []byte("PONG"))
 }
