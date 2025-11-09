@@ -176,5 +176,5 @@ func (ws *WebSocketConnections) sendPONG(uid string) error {
 	if !ok {
 		return errors.New("connection not found")
 	}
-	return conn.WriteMessage(websocket.PongMessage, []byte("PONG"))
+	return conn.WriteMessage(websocket.TextMessage, []byte("PONG"))
 }
