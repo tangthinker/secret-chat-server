@@ -3,86 +3,101 @@ package main
 /*
 #include <stdlib.h>
 #include <string.h>
+
+// 返回结构体，包含数据指针和长度
+typedef struct {
+    char* data;
+    size_t len;
+} BinaryData;
 */
 import "C"
 import (
-	"encoding/base64"
 	"unsafe"
 
 	"github.com/tangthinker/secret-chat-server/pkg"
 )
 
 // EncryptData 加密数据（C 导出函数）
-// 参数：data - base64 编码的输入数据（使用默认密钥）
-// 返回：base64 编码的加密数据，如果失败返回 NULL
+// 参数：data - 输入数据的指针，dataLen - 输入数据长度（使用默认密钥）
+// 返回：包含加密数据指针和长度的结构体，如果失败返回 NULL 指针和 0 长度
 //
 //export EncryptData
-func EncryptData(data *C.char) *C.char {
-	if data == nil {
-		return nil
+func EncryptData(data *C.char, dataLen C.size_t) C.BinaryData {
+	var result C.BinaryData
+	result.data = nil
+	result.len = 0
+
+	if data == nil || dataLen == 0 {
+		return result
 	}
 
-	// 将 C 字符串转换为 Go 字符串
-	dataStr := C.GoString(data)
-
-	// Base64 解码输入数据
-	inputData, err := base64.StdEncoding.DecodeString(dataStr)
-	if err != nil {
-		return nil
-	}
+	// 将 C 字节数组转换为 Go 字节切片
+	inputData := C.GoBytes(unsafe.Pointer(data), C.int(dataLen))
 
 	// 加密数据（使用 pkg 包中的函数，使用默认密钥）
 	encrypted, err := pkg.Encrypt(inputData)
 	if err != nil {
-		return nil
+		return result
 	}
 
-	// Base64 编码输出数据
-	outputStr := base64.StdEncoding.EncodeToString(encrypted)
+	// 分配内存并复制加密后的数据
+	if len(encrypted) > 0 {
+		result.data = (*C.char)(C.malloc(C.size_t(len(encrypted))))
+		if result.data == nil {
+			return result
+		}
+		C.memcpy(unsafe.Pointer(result.data), unsafe.Pointer(&encrypted[0]), C.size_t(len(encrypted)))
+		result.len = C.size_t(len(encrypted))
+	}
 
-	// 分配 C 字符串内存
-	return C.CString(outputStr)
+	return result
 }
 
 // DecryptData 解密数据（C 导出函数）
-// 参数：data - base64 编码的加密数据（使用默认密钥）
-// 返回：base64 编码的原始数据，如果失败返回 NULL
+// 参数：data - 加密数据的指针，dataLen - 加密数据长度（使用默认密钥）
+// 返回：包含解密数据指针和长度的结构体，如果失败返回 NULL 指针和 0 长度
 //
 //export DecryptData
-func DecryptData(data *C.char) *C.char {
-	if data == nil {
-		return nil
+func DecryptData(data *C.char, dataLen C.size_t) C.BinaryData {
+	var result C.BinaryData
+	result.data = nil
+	result.len = 0
+
+	if data == nil || dataLen == 0 {
+		return result
 	}
 
-	// 将 C 字符串转换为 Go 字符串
-	dataStr := C.GoString(data)
-
-	// Base64 解码输入数据
-	inputData, err := base64.StdEncoding.DecodeString(dataStr)
-	if err != nil {
-		return nil
-	}
+	// 将 C 字节数组转换为 Go 字节切片
+	inputData := C.GoBytes(unsafe.Pointer(data), C.int(dataLen))
 
 	// 解密数据（使用 pkg 包中的函数，使用默认密钥）
 	decrypted, err := pkg.Decrypt(inputData)
 	if err != nil {
-		return nil
+		return result
 	}
 
-	// Base64 编码输出数据
-	outputStr := base64.StdEncoding.EncodeToString(decrypted)
+	// 分配内存并复制解密后的数据
+	if len(decrypted) > 0 {
+		result.data = (*C.char)(C.malloc(C.size_t(len(decrypted))))
+		if result.data == nil {
+			return result
+		}
+		C.memcpy(unsafe.Pointer(result.data), unsafe.Pointer(&decrypted[0]), C.size_t(len(decrypted)))
+		result.len = C.size_t(len(decrypted))
+	}
 
-	// 分配 C 字符串内存
-	return C.CString(outputStr)
+	return result
 }
 
-// FreeString 释放 C 字符串内存（C 导出函数）
-// 调用者必须在使用完字符串后调用此函数释放内存
+// FreeBinaryData 释放二进制数据内存（C 导出函数）
+// 调用者必须在使用完数据后调用此函数释放内存
 //
-//export FreeString
-func FreeString(str *C.char) {
-	if str != nil {
-		C.free(unsafe.Pointer(str))
+//export FreeBinaryData
+func FreeBinaryData(binaryData *C.BinaryData) {
+	if binaryData != nil && binaryData.data != nil {
+		C.free(unsafe.Pointer(binaryData.data))
+		binaryData.data = nil
+		binaryData.len = 0
 	}
 }
 

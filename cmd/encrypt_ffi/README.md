@@ -100,100 +100,155 @@ DynamicLibrary loadCryptoLibraryDev() {
 
 ## C API
 
+### BinaryData 结构体
+
+```c
+typedef struct {
+    char* data;    // 数据指针
+    size_t len;    // 数据长度
+} BinaryData;
+```
+
 ### EncryptData
 
 ```c
-char* EncryptData(const char* data);
+BinaryData EncryptData(const char* data, size_t dataLen);
 ```
 
 - **参数**:
-  - `data`: Base64 编码的输入数据
-- **返回**: Base64 编码的加密数据，失败返回 NULL
+  - `data`: 输入数据的指针（二进制数据）
+  - `dataLen`: 输入数据的长度
+- **返回**: `BinaryData` 结构体，包含加密数据的指针和长度
+  - 成功：`data` 指向加密数据，`len` 为数据长度
+  - 失败：`data` 为 NULL，`len` 为 0
 - **注意**: 
   - 使用默认密钥进行加密
-  - 返回的字符串需要使用 `FreeString` 释放
+  - 返回的数据需要使用 `FreeBinaryData` 释放
 
 ### DecryptData
 
 ```c
-char* DecryptData(const char* data);
+BinaryData DecryptData(const char* data, size_t dataLen);
 ```
 
 - **参数**:
-  - `data`: Base64 编码的加密数据
-- **返回**: Base64 编码的原始数据，失败返回 NULL
+  - `data`: 加密数据的指针（二进制数据）
+  - `dataLen`: 加密数据的长度
+- **返回**: `BinaryData` 结构体，包含解密数据的指针和长度
+  - 成功：`data` 指向解密数据，`len` 为数据长度
+  - 失败：`data` 为 NULL，`len` 为 0
 - **注意**: 
   - 使用默认密钥进行解密
-  - 返回的字符串需要使用 `FreeString` 释放
+  - 返回的数据需要使用 `FreeBinaryData` 释放
 
-### FreeString
+### FreeBinaryData
 
 ```c
-void FreeString(char* str);
+void FreeBinaryData(BinaryData* binaryData);
 ```
 
 - **参数**:
-  - `str`: 需要释放的 C 字符串指针
+  - `binaryData`: 需要释放的 `BinaryData` 结构体指针
 - **功能**: 释放由 `EncryptData` 或 `DecryptData` 分配的内存
 
 ## Flutter 使用示例
 
 ```dart
 import 'dart:ffi';
+import 'dart:typed_data';
+import 'dart:convert';
 import 'package:ffi/ffi.dart';
 
 // 加载库（macOS 示例）
 final DynamicLibrary lib = DynamicLibrary.open('macos/Runner/Frameworks/libcrypto_arm64.dylib');
 
+// 定义 BinaryData 结构体
+class BinaryData extends Struct {
+  @IntPtr()
+  external Pointer<Uint8> data;
+  
+  @Int64()
+  external int len;
+}
+
 // 定义函数签名
-typedef EncryptDataNative = Pointer<Utf8> Function(Pointer<Utf8> data);
-typedef EncryptData = Pointer<Utf8> Function(Pointer<Utf8> data);
+typedef EncryptDataNative = BinaryData Function(Pointer<Uint8> data, Int64 dataLen);
+typedef EncryptData = BinaryData Function(Pointer<Uint8> data, int dataLen);
 
-typedef DecryptDataNative = Pointer<Utf8> Function(Pointer<Utf8> data);
-typedef DecryptData = Pointer<Utf8> Function(Pointer<Utf8> data);
+typedef DecryptDataNative = BinaryData Function(Pointer<Uint8> data, Int64 dataLen);
+typedef DecryptData = BinaryData Function(Pointer<Uint8> data, int dataLen);
 
-typedef FreeStringNative = Void Function(Pointer<Utf8>);
-typedef FreeString = void Function(Pointer<Utf8>);
+typedef FreeBinaryDataNative = Void Function(Pointer<BinaryData>);
+typedef FreeBinaryData = void Function(Pointer<BinaryData>);
 
 // 获取函数
 final encryptData = lib.lookupFunction<EncryptDataNative, EncryptData>(
     'EncryptData');
 final decryptData = lib.lookupFunction<DecryptDataNative, DecryptData>(
     'DecryptData');
-final freeString = lib.lookupFunction<FreeStringNative, FreeString>(
-    'FreeString');
+final freeBinaryData = lib.lookupFunction<FreeBinaryDataNative, FreeBinaryData>(
+    'FreeBinaryData');
 
 // 使用示例
-String encrypt(String data) {
-  final dataPtr = data.toNativeUtf8();
+Uint8List encrypt(Uint8List data) {
+  final dataPtr = malloc<Uint8>(data.length);
+  dataPtr.asTypedList(data.length).setAll(0, data);
   
   try {
-    final resultPtr = encryptData(dataPtr);
-    if (resultPtr == nullptr) {
+    final result = encryptData(dataPtr, data.length);
+    if (result.data == nullptr || result.len == 0) {
       throw Exception('Encryption failed');
     }
-    final result = resultPtr.toDartString();
-    freeString(resultPtr);
-    return result;
+    
+    // 复制结果数据
+    final encrypted = result.data.asTypedList(result.len).toList();
+    
+    // 释放内存
+    final resultPtr = malloc<BinaryData>()..ref = result;
+    freeBinaryData(resultPtr);
+    malloc.free(resultPtr);
+    
+    return Uint8List.fromList(encrypted);
   } finally {
     malloc.free(dataPtr);
   }
 }
 
-String decrypt(String data) {
-  final dataPtr = data.toNativeUtf8();
+Uint8List decrypt(Uint8List data) {
+  final dataPtr = malloc<Uint8>(data.length);
+  dataPtr.asTypedList(data.length).setAll(0, data);
   
   try {
-    final resultPtr = decryptData(dataPtr);
-    if (resultPtr == nullptr) {
+    final result = decryptData(dataPtr, data.length);
+    if (result.data == nullptr || result.len == 0) {
       throw Exception('Decryption failed');
     }
-    final result = resultPtr.toDartString();
-    freeString(resultPtr);
-    return result;
+    
+    // 复制结果数据
+    final decrypted = result.data.asTypedList(result.len).toList();
+    
+    // 释放内存
+    final resultPtr = malloc<BinaryData>()..ref = result;
+    freeBinaryData(resultPtr);
+    malloc.free(resultPtr);
+    
+    return Uint8List.fromList(decrypted);
   } finally {
     malloc.free(dataPtr);
   }
+}
+
+// 如果需要处理字符串，可以添加辅助函数
+String encryptString(String text) {
+  final data = utf8.encode(text);
+  final encrypted = encrypt(Uint8List.fromList(data));
+  return base64Encode(encrypted); // 如果需要 base64 编码
+}
+
+String decryptString(String encryptedBase64) {
+  final encrypted = base64Decode(encryptedBase64);
+  final decrypted = decrypt(Uint8List.fromList(encrypted));
+  return utf8.decode(decrypted);
 }
 ```
 
@@ -202,14 +257,15 @@ String decrypt(String data) {
 - **算法**: AES-256-GCM
 - **密钥**: 使用默认密钥（`EncryptKey` 常量）
 - **密钥派生**: SHA-256 哈希
-- **数据格式**: Base64 编码
+- **数据格式**: 二进制数据（直接处理字节）
 - **Nonce**: 随机生成，包含在密文中
 
 ## 注意事项
 
-1. 所有输入和输出数据都使用 Base64 编码
+1. 所有输入和输出数据都是二进制数据（字节数组），不再使用 Base64 编码
 2. 使用固定的默认密钥，通过 SHA-256 派生为 32 字节密钥
-3. 必须在使用完返回的字符串后调用 `FreeString` 释放内存
-4. 函数返回 NULL 表示操作失败
+3. 必须在使用完返回的数据后调用 `FreeBinaryData` 释放内存
+4. 函数返回 `data` 为 NULL 或 `len` 为 0 表示操作失败
 5. 密钥不可配置，统一使用默认密钥
+6. 输入数据长度通过 `dataLen` 参数传递，输出数据长度通过返回结构体的 `len` 字段获取
 
