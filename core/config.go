@@ -1,6 +1,10 @@
 package core
 
-import "github.com/spf13/viper"
+import (
+	"time"
+
+	"github.com/spf13/viper"
+)
 
 type Config struct {
 	configPath string
@@ -22,4 +26,8 @@ func (c *Config) GetString(key string) string {
 
 func (c *Config) GetInt(key string) int {
 	return viper.GetInt(key)
+}
+
+func (c *Config) GetDuration(key string) time.Duration {
+	return viper.GetDuration(key)
 }

@@ -7,22 +7,10 @@ import (
 
 type Connections interface {
 	// SendSource 发送消息
-	SendSource(uid string, message SourceMessage) error
+	SendSource(uid string, message string) error
 	// HandleSource 处理接受消息
-	HandleSource(uid string, message SourceMessage) error
+	HandleSource(uid string, message string) error
 }
-
-type SourceMessage struct {
-	Type    SourceType
-	Content []byte
-}
-
-type SourceType int
-
-const (
-	SourceTypeString SourceType = 1
-	SourceTypeBinary SourceType = 2
-)
 
 type Message struct {
 	MessageType MessageType `json:"message_type"`
@@ -35,6 +23,14 @@ type Message struct {
 func (m *Message) String() string {
 	jsData, _ := json.Marshal(m)
 	return string(jsData)
+}
+
+func ToMessage(message string) (*Message, error) {
+	var msg Message
+	if err := json.Unmarshal([]byte(message), &msg); err != nil {
+		return nil, err
+	}
+	return &msg, nil
 }
 
 type MessageType int

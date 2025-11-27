@@ -117,8 +117,12 @@ github.com/stretchr/testify v1.11.1 h1:7s2iGBzp5EwR7/aIZr8ao5+dra3wiQyKjjFuvgVKu
 github.com/stretchr/testify v1.11.1/go.mod h1:wZwfW3scLgRK+23gO65QZefKpKQRnfz6sD981Nm4B6U=
 github.com/subosito/gotenv v1.6.0 h1:9NlTDc1FTs4qu0DDq7AEtTPNw6SVm7uBMsUCUjABIf8=
 github.com/subosito/gotenv v1.6.0/go.mod h1:Dk4QP5c2W3ibzajGcXpNraDfq2IrhjMIvMSWPKKo0FU=
+github.com/tangthinker/encrypt-conn-tools v1.0.0 h1:kVP3sw9YepcZHpUJc35/fhLVINNQdBGpHeyot65ZbDc=
+github.com/tangthinker/encrypt-conn-tools v1.0.0/go.mod h1:KvR/J9a2JQ9M+A6bix2tt6qQ9IKwWxdMbyhWJz4/edI=
 github.com/tangthinker/jwt-model v1.0.0 h1:GGeFnccUqG9lZJTHXaLfJkbmfOnoJy2ni+QNopaoDUw=
 github.com/tangthinker/jwt-model v1.0.0/go.mod h1:XkVE7eydrVUj0KrtaoAboA+x7DJ+Nb7F1FKLBjXjfas=
+github.com/tangthinker/skep-server-go v1.0.0 h1:vuiboqrwfUa1ep4LtcY+57LiXmhTtS9KajnVhlmKHWc=
+github.com/tangthinker/skep-server-go v1.0.0/go.mod h1:h1JD/qB2pedYT00E+fDolgBYzCLNM4T0QBG+PyF1zAI=
 github.com/tangthinker/user-center v1.2.6 h1:4ckue8SYQQH2tlHFR68B4QzUJgHCs+CID/+cSANMOhE=
 github.com/tangthinker/user-center v1.2.6/go.mod h1:Md7/b0MQDLcqClHSQdIc6T0ykmDW59+6YEZspKJo5nE=
 github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6KllzawFIhcdPw=

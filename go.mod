@@ -1,6 +1,6 @@
 module github.com/tangthinker/secret-chat-server
 
-go 1.25.1
+go 1.25.4
 
 require (
 	github.com/gofiber/contrib/websocket v1.3.4
@@ -56,7 +56,9 @@ require (
 	github.com/spf13/cast v1.10.0 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
+	github.com/tangthinker/encrypt-conn-tools v1.0.0 // indirect
 	github.com/tangthinker/jwt-model v1.0.0 // indirect
+	github.com/tangthinker/skep-server-go v1.0.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.55.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect

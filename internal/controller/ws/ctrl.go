@@ -2,7 +2,11 @@ package ws
 
 import (
 	"github.com/gofiber/contrib/websocket"
+	"github.com/gofiber/fiber/v2/log"
+	"github.com/tangthinker/secret-chat-server/core"
+	"github.com/tangthinker/secret-chat-server/internal/middleware"
 	"github.com/tangthinker/secret-chat-server/internal/service/connections"
+	skep "github.com/tangthinker/skep-server-go/pkg"
 )
 
 type Ctrl struct {
@@ -16,19 +20,35 @@ func New() *Ctrl {
 }
 
 func (ctrl *Ctrl) HandleConn(conn *websocket.Conn) {
-	uid := conn.Locals("uid").(string)
-	ctrl.connService.AddConnection(uid, conn)
+	uid := conn.Locals(middleware.UIDKey).(string)
+	token := conn.Locals(middleware.TokenKey).(string)
+
+	mConn := connections.NewConn(conn)
+
+	// 握手
+	ecdsaPrivKey := core.GlobalHelper.Config.GetString("encrypt-conn.ecdsa-priv-key")
+	handshakeTimeout := core.GlobalHelper.Config.GetDuration("encrypt-conn.handshake-timeout")
+	skepProcessor := skep.NewSkep(mConn, handshakeTimeout, []string{uid, token}, ecdsaPrivKey)
+	sharedKey, err := skepProcessor.Handshake()
+	if err != nil {
+		log.Errorf("handshake failed, uid: %s, token: %s, err: %v", uid, token, err)
+		mConn.Close()
+		return
+	}
+
+	mConn.SetEncryptKey(sharedKey)
+
+	ctrl.connService.AddConnection(uid, mConn)
 	for {
-		messageType, message, err := conn.ReadMessage()
+		message, err := mConn.ReadMessage()
 		if err != nil {
+			log.Errorf("read message failed, uid: %s, err: %v", uid, err)
 			ctrl.connService.RemoveConnection(uid)
 			break
 		}
-		err = ctrl.connService.HandleSource(uid, connections.SourceMessage{
-			Type:    connections.SourceType(messageType),
-			Content: message,
-		})
+		err = ctrl.connService.Handle(uid, message)
 		if err != nil {
+			log.Errorf("handle message failed, uid: %s, message: %s, err: %v", uid, message, err)
 			ctrl.connService.RemoveConnection(uid)
 			break
 		}
