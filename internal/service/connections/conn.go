@@ -64,7 +64,7 @@ func (c *Conn) ReadMessage() (string, error) {
 }
 
 func (c *Conn) SendMessage(data string) error {
-	if data == "POING" {
+	if data == "PONG" {
 		return c.conn.WriteMessage(websocket.TextMessage, []byte(data))
 	}
 
