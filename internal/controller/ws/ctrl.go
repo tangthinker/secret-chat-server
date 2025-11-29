@@ -43,13 +43,13 @@ func (ctrl *Ctrl) HandleConn(conn *websocket.Conn) {
 		message, err := mConn.ReadMessage()
 		if err != nil {
 			log.Errorf("read message failed, uid: %s, err: %v", uid, err)
-			ctrl.connService.RemoveConnection(uid)
+			ctrl.connService.RemoveConnection(uid, mConn.GetConnId())
 			break
 		}
-		err = ctrl.connService.Handle(uid, message)
+		err = ctrl.connService.Handle(uid, mConn.GetConnId(), message)
 		if err != nil {
 			log.Errorf("handle message failed, uid: %s, message: %s, err: %v", uid, message, err)
-			ctrl.connService.RemoveConnection(uid)
+			ctrl.connService.RemoveConnection(uid, mConn.GetConnId())
 			break
 		}
 	}

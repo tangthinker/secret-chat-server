@@ -13,7 +13,7 @@ import (
 )
 
 type WebSocketConnections struct {
-	connections map[string]*Conn
+	connections map[string][]*Conn
 	mutex       sync.RWMutex
 
 	messagesModel *model.MessagesModel
@@ -21,7 +21,7 @@ type WebSocketConnections struct {
 
 func NewWebSocketConnections() *WebSocketConnections {
 	return &WebSocketConnections{
-		connections: make(map[string]*Conn),
+		connections: make(map[string][]*Conn),
 		mutex:       sync.RWMutex{},
 
 		messagesModel: model.NewMessagesModel(),
@@ -30,12 +30,13 @@ func NewWebSocketConnections() *WebSocketConnections {
 
 func (ws *WebSocketConnections) AddConnection(uid string, conn *Conn) {
 	ws.mutex.Lock()
-	defer ws.mutex.Unlock()
 	if _, ok := ws.connections[uid]; ok {
-		ws.connections[uid].Close()
-		delete(ws.connections, uid)
+		ws.connections[uid] = append(ws.connections[uid], conn)
+		ws.mutex.Unlock()
+		return
 	}
-	ws.connections[uid] = conn
+	ws.connections[uid] = []*Conn{conn}
+	ws.mutex.Unlock()
 
 	ctx, cal := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cal()
@@ -59,31 +60,56 @@ func (ws *WebSocketConnections) AddConnection(uid string, conn *Conn) {
 	}
 }
 
-func (ws *WebSocketConnections) RemoveConnection(uid string) {
+func (ws *WebSocketConnections) RemoveConnection(uid string, connId string) {
 	ws.mutex.Lock()
 	defer ws.mutex.Unlock()
-	conn, ok := ws.connections[uid]
+	conns, ok := ws.connections[uid]
 	if !ok {
 		return
 	}
-	conn.Close()
-	delete(ws.connections, uid)
+	for i, conn := range conns {
+		if conn.connId == connId {
+			conn.Close()
+			ws.connections[uid] = append(conns[:i], conns[i+1:]...)
+
+			if len(ws.connections[uid]) == 0 {
+				delete(ws.connections, uid)
+			}
+			return
+		}
+	}
 }
 
 func (ws *WebSocketConnections) Send2User(uid string, message string) error {
 	ws.mutex.RLock()
-	defer ws.mutex.RUnlock()
-	conn, ok := ws.connections[uid]
+	conns, ok := ws.connections[uid]
 	if !ok {
+		ws.mutex.RUnlock()
 		return errors.New("connection not found")
 	}
 
-	return conn.SendMessage(message)
+	targetConns := make([]*Conn, len(conns))
+	copy(targetConns, conns)
+	ws.mutex.RUnlock()
+
+	successCount := 0
+	for _, conn := range targetConns {
+		err := conn.SendMessage(message)
+		if err != nil {
+			log.Infof("send message to user failed, uid: %s, message: %s, err: %v", uid, message, err)
+			continue
+		}
+		successCount++
+	}
+	if successCount == 0 {
+		return errors.New("send message to user failed")
+	}
+	return nil
 }
 
-func (ws *WebSocketConnections) Handle(uid string, message string) error {
+func (ws *WebSocketConnections) Handle(uid string, connId string, message string) error {
 	if message == "PING" {
-		return ws.sendPONG(uid)
+		return ws.sendPONG(uid, connId)
 	}
 
 	msg, err := ToMessage(message)
@@ -112,12 +138,22 @@ func (ws *WebSocketConnections) Handle(uid string, message string) error {
 	return nil
 }
 
-func (ws *WebSocketConnections) sendPONG(uid string) error {
+func (ws *WebSocketConnections) sendPONG(uid string, connId string) error {
 	ws.mutex.RLock()
-	defer ws.mutex.RUnlock()
-	conn, ok := ws.connections[uid]
+	conns, ok := ws.connections[uid]
 	if !ok {
+		ws.mutex.RUnlock()
 		return errors.New("connection not found")
 	}
-	return conn.SendMessage("PONG")
+
+	targetConns := make([]*Conn, len(conns))
+	copy(targetConns, conns)
+	ws.mutex.RUnlock()
+
+	for _, conn := range targetConns {
+		if conn.connId == connId {
+			return conn.SendMessage("PONG")
+		}
+	}
+	return errors.New("connection not found")
 }

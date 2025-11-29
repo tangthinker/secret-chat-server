@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gofiber/contrib/websocket"
+	"github.com/google/uuid"
 	encrypt "github.com/tangthinker/encrypt-conn-tools/pkg"
 	skep "github.com/tangthinker/skep-server-go/pkg"
 )
@@ -13,12 +14,19 @@ var _ skep.Conn = (*Conn)(nil)
 type Conn struct {
 	conn       *websocket.Conn
 	encryptKey string
+	connId     string
 }
 
 func NewConn(conn *websocket.Conn) *Conn {
+	connId := uuid.New().String()
 	return &Conn{
-		conn: conn,
+		conn:   conn,
+		connId: connId,
 	}
+}
+
+func (c *Conn) GetConnId() string {
+	return c.connId
 }
 
 func (c *Conn) SetEncryptKey(encryptKey string) {
