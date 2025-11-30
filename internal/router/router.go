@@ -3,6 +3,8 @@ package router
 import (
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
+	"github.com/tangthinker/secret-chat-server/core"
+	"github.com/tangthinker/secret-chat-server/internal/controller/oss"
 	"github.com/tangthinker/secret-chat-server/internal/controller/user_info"
 	"github.com/tangthinker/secret-chat-server/internal/controller/ws"
 	"github.com/tangthinker/secret-chat-server/internal/middleware"
@@ -22,4 +24,9 @@ func RegisterRouters(router fiber.Router) {
 
 	websocketCtrl := ws.New()
 	rootGroup.Get("/websocket/conn", websocket.New(websocketCtrl.HandleConn))
+
+	ossCtrl := oss.New()
+	rootGroup.Post("/oss/upload", ossCtrl.Upload)
+	storagePath := core.GlobalHelper.Config.GetString("oss.storage-path")
+	router.Static("/oss", storagePath)
 }

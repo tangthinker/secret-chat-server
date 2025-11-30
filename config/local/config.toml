@@ -5,6 +5,12 @@ log-file-path = "./request.log"
 [database]
 path = "/Users/tangthinker/code/go/secret-chat-server/data"
 
+[oss]
+storage-path = "/Users/tangthinker/code/go/secret-chat-server/data/oss"
+access-url = "http://127.0.0.1:9999/oss/"
+clean-ttl = "168h" # 一周清理一次 24*7=168小时
+
+
 [encrypt-conn]
 ecdsa-priv-key = "30770201010420694c866af3859ca55ab36eda62738e017713430b611397f7d3a16b0b48d77366a00a06082a8648ce3d030107a14403420004868500c4eefafd9c462973c4c29859e36cd15f0808d8422d94c5a25723574fd167917c05dfaff5d5ac62a8c5a5b61900642343212d22b418330222e14d60ece4"
 ecdsa-pub-key = "3059301306072a8648ce3d020106082a8648ce3d03010703420004868500c4eefafd9c462973c4c29859e36cd15f0808d8422d94c5a25723574fd167917c05dfaff5d5ac62a8c5a5b61900642343212d22b418330222e14d60ece4"

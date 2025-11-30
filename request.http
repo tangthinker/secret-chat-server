@@ -1,0 +1,13 @@
+@token = ""
+
+### Upload
+POST http://127.0.0.1:9999/api/v1/oss/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: {{token}}
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="request.http"
+Content-Type: text/plain
+
+< ./request.http
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
