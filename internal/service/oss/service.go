@@ -55,11 +55,7 @@ func (s *Service) Upload(ctx context.Context, reader io.Reader, fileName string)
 		return "", fmt.Errorf("copy file error: %v", err)
 	}
 
-	accessUrl := s.accessUrl
-	if !strings.HasSuffix(accessUrl, "/") {
-		accessUrl += "/"
-	}
-	return accessUrl + filename, nil
+	return s.accessUrl + filename, nil
 }
 
 func (s *Service) startCleanTask() {
