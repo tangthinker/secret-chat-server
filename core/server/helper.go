@@ -10,8 +10,7 @@ import (
 
 func StartServer(app *fiber.App) {
 
-	logFilepath := core.GlobalHelper.Config.GetString("server.log-file-path")
-	app.Use(middleware.LoggerInFile(logFilepath))
+	app.Use(middleware.LoggerInConsole())
 
 	serverPort := core.GlobalHelper.Config.GetString("server.port")
 	log.Fatal(app.Listen(":" + serverPort))

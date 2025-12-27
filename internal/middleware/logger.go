@@ -21,3 +21,12 @@ func LoggerInFile(filepath string) fiber.Handler {
 		Output:     loggingFile,
 	})
 }
+
+func LoggerInConsole() fiber.Handler {
+	return logger.New(logger.Config{
+		Format:     "${time} ${method} ${path} - ${header:X-Forwarded-For} - ${status} - ${latency}\n",
+		TimeFormat: "2006-01-02 15:04:05",
+		TimeZone:   "Local",
+		Output:     os.Stdout,
+	})
+}

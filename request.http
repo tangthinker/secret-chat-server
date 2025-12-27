@@ -1,7 +1,7 @@
-@token = ""
+@token = Thinker-v1-A565751D85B2CD1D2493F68DDDF5C0BFA20CAD4B49A1F8A1666ACAD47E875EB3
 
 ### Upload
-POST http://127.0.0.1:9999/api/v1/oss/upload
+POST https://chat.tangthinker.com/api/v1/oss/upload
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 Authorization: {{token}}
 
@@ -11,3 +11,18 @@ Content-Type: text/plain
 
 < ./request.http
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+# {
+#   "code": 0,
+#   "data": "https:/chat.tangthinker.com/oss/fdfd4c193c744633b5b53d658c238f4a_20251201005233.http",
+#   "msg": "success"
+# }
+
+### Login
+POST https://chat.tangthinker.com/auth/login
+Content-Type: application/json
+
+{
+    "uid": "tangthinker",
+    "password": "333"
+}
