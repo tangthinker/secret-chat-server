@@ -5,7 +5,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/tangthinker/secret-chat-server/core"
-	"github.com/tangthinker/secret-chat-server/internal/middleware"
 )
 
 func StartServer(app *fiber.App) {
