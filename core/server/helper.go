@@ -10,8 +10,6 @@ import (
 
 func StartServer(app *fiber.App) {
 
-	app.Use(middleware.LoggerInConsole())
-
 	serverPort := core.GlobalHelper.Config.GetString("server.port")
 	log.Fatal(app.Listen(":" + serverPort))
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/tangthinker/secret-chat-server/core"
 	"github.com/tangthinker/secret-chat-server/core/server"
+	"github.com/tangthinker/secret-chat-server/internal/middleware"
 	"github.com/tangthinker/secret-chat-server/internal/router"
 	userPkg "github.com/tangthinker/user-center/pkg"
 )
@@ -18,6 +19,8 @@ func main() {
 	core.Init(*configPath)
 
 	app := fiber.New()
+
+	app.Use(middleware.LoggerInConsole())
 
 	router.RegisterRouters(app)
 
